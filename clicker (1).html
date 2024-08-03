@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кликер</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: orange;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        #taps {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #menu {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #storeButton {
+            display: block;
+            margin-bottom: 5px;
+        }
+        #disableAutoClickerButton {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Taps: <span id="taps">0</span></h1>
+    <button id="clickButton">Кликать</button>
+    <button id="menuButton">Меню</button>
+    <div id="menu">
+        <div>
+            <button id="storeButton">Автокликер - цена: 50 кликов</button>
+            <button id="disableAutoClickerButton">Отключение автокликера, +возврат 20 кликов</button>
+        </div>
+    </div>
+
+    <script>
+        let taps = 0;
+        let autoClicker = false;
+        const tapsSpan = document.getElementById('taps');
+        const clickButton = document.getElementById('clickButton');
+        const menuButton = document.getElementById('menuButton');
+        const menu = document.getElementById('menu');
+        const storeButton = document.getElementById('storeButton');
+        const disableAutoClickerButton = document.getElementById('disableAutoClickerButton');
+
+        clickButton.addEventListener('click', () => {
+            taps++;
+            tapsSpan.textContent = taps;
+            localStorage.setItem('taps', taps);
+        });
+
+        menuButton.addEventListener('click', () => {
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        storeButton.addEventListener('click', () => {
+            if (taps >= 50) {
+                taps -= 50;
+                tapsSpan.textContent = taps;
+                autoClicker = true;
+                autoClick();
+                localStorage.setItem('autoClicker', true);
+            } else {
+                alert("Недостаточно кликов!");
+            }
+        });
+
+        disableAutoClickerButton.addEventListener('click', () => {
+            if (autoClicker) {
+                autoClicker = false;
+                taps += 20; // Возврат 20 кликов
+                tapsSpan.textContent = taps;
+                localStorage.setItem('taps', taps);
+                localStorage.setItem('autoClicker', false);
+            }
+        });
+
+        function autoClick() {
+            if (autoClicker) {
+                taps++;
+                tapsSpan.textContent = taps;
+                localStorage.setItem('taps', taps);
+                setTimeout(autoClick, 1000);
+            }
+        }
+
+        if (localStorage.getItem('taps')) {
+            taps = parseInt(localStorage.getItem('taps'));
+            tapsSpan.textContent = taps;
+        }
+        if (localStorage.getItem('autoClicker') === 'true') {
+            autoClicker = true;
+            autoClick();
+        }
+    </script>
+</body>
+</html>
